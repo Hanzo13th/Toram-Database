@@ -1,24 +1,30 @@
-import items from "../coryn_all_items.json";
+import fs from "fs";
 
 export default function handler(req, res) {
-
-    const name = req.query.name;
-
-    if (!name) {
-        return res.json({
-            error: "No item name provided"
-        });
-    }
-
-    const result = items.find(
-        item => item.name.toLowerCase() === name.toLowerCase()
+    const items = JSON.parse(
+        fs.readFileSync("./coryn_all_items.json", "utf8")
     );
 
-    if (!result) {
-        return res.json({
+    const { name, id } = req.query;
+
+    let item;
+
+    if (id) {
+        item = items.find(
+            x => String(x.id) === String(id)
+        );
+    } 
+    else if (name) {
+        item = items.find(
+            x => x.name.toLowerCase().includes(name.toLowerCase())
+        );
+    }
+
+    if (!item) {
+        return res.status(404).json({
             error: "Item not found"
         });
     }
 
-    res.json(result);
+    res.json(item);
 }
