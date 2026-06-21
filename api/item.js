@@ -1,20 +1,17 @@
-import fs from "fs";
+import items from "../coryn_all_items.json";
 
 export default function handler(req, res) {
-    const items = JSON.parse(
-        fs.readFileSync("./coryn_all_items.json", "utf8")
-    );
-
     const { name, id } = req.query;
 
-    let item;
+    let item = null;
 
     if (id) {
         item = items.find(
             x => String(x.id) === String(id)
         );
-    } 
-    else if (name) {
+    }
+
+    if (name) {
         item = items.find(
             x => x.name.toLowerCase().includes(name.toLowerCase())
         );
@@ -26,5 +23,5 @@ export default function handler(req, res) {
         });
     }
 
-    res.json(item);
+    res.status(200).json(item);
 }
